@@ -26,12 +26,22 @@ export default function MarathonModal({ opened, onClose }: MarathonModalProps) {
     plan,
     gender,
     email,
+    password,
+    confirmPassword,
+    haveCoupon,
+    couponCode,
+    total,
     setFname,
     setLname,
     setPlan,
     setGender,
     setEmail,
     reset,
+    setPassword,
+    setconfirmPassword,
+    setHaveCoupon,
+    setCouponCode,
+    discountCupon,
   } = useMarathonFormStore();
 
   // Mantine Form
@@ -43,15 +53,21 @@ export default function MarathonModal({ opened, onClose }: MarathonModalProps) {
       gender,
       agree,
       email,
+      password,
+      confirmPassword,
+      haveCoupon,
+      couponCode,
+      total,
     },
     validate: zod4Resolver(marathonSchema),
     validateInputOnChange: true,
   });
   // update Zustand form real-time
-  useEffect(() => {}, []);
+  useEffect(() => {discountCupon()}, [discountCupon, plan, haveCoupon, couponCode]);
 
   const onSubmitRegister = () => {
     //  alert หลังจาก กด Register
+    alert("Register Completed. Please check your email for more information.");
     onClose();
     reset();
   };
@@ -104,11 +120,24 @@ export default function MarathonModal({ opened, onClose }: MarathonModalProps) {
             label="Password"
             description="Password must contain 6-12 charaters"
             withAsterisk
+            value={password}
+            onChange={(e) => {
+              setPassword(e.currentTarget.value);
+              mantineForm.setFieldValue("password", e.currentTarget.value);
+            }}
+            error={mantineForm.errors.password}
           />
           <PasswordInput
             label="Confirm Password"
             description="Confirm Password"
             withAsterisk
+            value={confirmPassword}
+            onChange={(e) => {
+              setconfirmPassword(e.currentTarget.value);
+              mantineForm.setFieldValue("confirmPassword", e.currentTarget.value);
+            }}
+            error={mantineForm.errors.confirmPassword}
+            
           />
           <Select
             label="Plan"
@@ -150,11 +179,26 @@ export default function MarathonModal({ opened, onClose }: MarathonModalProps) {
             Coupon (30% Discount)
           </Alert>
           {/* เลือกกรออก coupon ตรงนี้ */}
-          <Checkbox label="I have coupon" />
+          <Checkbox label="I have coupon" 
+            checked={mantineForm.values.haveCoupon}
+            onChange={(e) => {
+              setHaveCoupon(e.currentTarget.checked);
+              mantineForm.setFieldValue("haveCoupon", e.currentTarget.checked);
+            }}
+            error={mantineForm.errors.haveCoupon}
+          />
           {/* จะต้องแสดงเมื่อกด เลือก I have coupon เท่านั้น*/}
-          <TextInput label="Coupon Code" />
+          {mantineForm.values.haveCoupon && (<TextInput label="Coupon Code" 
+          checked={mantineForm.values.haveCoupon}
+          value={couponCode}
+          onChange={(e) => { 
+            setCouponCode(e.currentTarget.value);
+            mantineForm.setFieldValue("couponCode", e.currentTarget.value);
+          } }
+          error={mantineForm.errors.couponCode}
+          />)}
           {/* แสดงราคาการสมัครงานวิ่งตามแผนที่เลือก  */}
-          <Text>Total Payment : THB</Text>
+          <Text>Total Payment : {total}THB</Text>
           <Divider my="xs" variant="dashed" />
           <Checkbox
             label={
